@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#050505" />
+  <title>Anniversary Memory Player</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-bg" id="pageBg"></div>
+  <div class="grain"></div>
+
+  <main class="player-shell" aria-label="Anniversary memory music player">
+    <section class="top-text">
+      <p class="artist" id="artistName">OUR MOMENTS</p>
+      <h1 class="song-title" id="songTitle">Our Anniversary</h1>
+      <p class="song-note" id="songNote">SCAN • TAP • REMEMBER</p>
+    </section>
+
+    <section class="album-stage" aria-label="Album record">
+      <div class="sleeve" id="sleeve">
+        <div class="sleeve-shine"></div>
+        <div class="sleeve-label">
+          <span>MEMORY</span>
+          <strong>LP</strong>
+        </div>
+      </div>
+
+      <button class="record in-sleeve" id="record" type="button" aria-label="Tap record to play or pause, double tap to change image">
+        <div class="disc" id="disc">
+          <div class="cover cover-back" id="coverBack"></div>
+          <div class="cover cover-front" id="coverFront"></div>
+          <div class="grooves"></div>
+          <div class="center-label"></div>
+          <div class="center-hole"></div>
+        </div>
+      </button>
+
+      <div class="tonearm hidden" id="tonearm">
+        <img id="tonearmImg" src="images/tonearm.png" alt="" />
+      </div>
+    </section>
+
+    <section class="controls" aria-label="Player controls">
+      <div class="progress-wrap">
+        <button class="round-btn" id="playBtn" type="button" aria-label="Play or pause">▶</button>
+        <div class="progress-bar" id="progressBar" role="slider" aria-label="Song progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+      <div class="time-row">
+        <span id="currentTime">0:00</span>
+        <span id="duration">0:00</span>
+      </div>
+
+      <div class="memory-buttons">
+        <button class="small-btn" id="prevBtn" type="button">PREV</button>
+        <button class="main-btn" id="mainBtn" type="button">▶ START MEMORY</button>
+        <button class="small-btn" id="nextBtn" type="button">NEXT</button>
+      </div>
+    </section>
+
+    <p class="hint" id="hintText">Single tap record = play / pause · Double tap = change image</p>
+
+    <audio id="audio" preload="metadata" playsinline></audio>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
