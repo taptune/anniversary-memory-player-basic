@@ -1,7 +1,6 @@
 (() => {
   const config = window.PLAYER_CONFIG || PLAYER_CONFIG;
   const tracks = Array.isArray(config.tracks) ? config.tracks : [];
-
   const $ = (id) => document.getElementById(id);
 
   const audio = $("audio");
@@ -9,7 +8,8 @@
   const artistName = $("artistName");
   const songTitle = $("songTitle");
   const songNote = $("songNote");
-  const sleeve = $("sleeve");
+  const sleeveBack = $("sleeveBack");
+  const sleeveFront = $("sleeveFront");
   const record = $("record");
   const disc = $("disc");
   const coverBack = $("coverBack");
@@ -48,9 +48,34 @@
     return new Promise((resolve) => window.setTimeout(resolve, ms));
   }
 
+  function sleeveElements() {
+    return [sleeveBack, sleeveFront].filter(Boolean);
+  }
+
+  function setSleevesLeft(isLeft) {
+    sleeveElements().forEach((el) => el.classList.toggle("left", isLeft));
+    record.classList.toggle("left", isLeft);
+  }
+
+  function showSleeves() {
+    sleeveElements().forEach((el) => el.classList.remove("hidden"));
+  }
+
+  function hideSleeves() {
+    sleeveElements().forEach((el) => el.classList.add("hidden"));
+  }
+
+  function resetClosedSleeve() {
+    showSleeves();
+    setSleevesLeft(false);
+    record.classList.add("inside");
+    tonearm.classList.remove("on");
+  }
+
   function setBackground(src) {
-    pageBg.style.setProperty("--bg-image", `url('${withVersion(src)}')`);
-    sleeve.style.setProperty("--sleeve-image", `url('${withVersion(src)}')`);
+    const versioned = withVersion(src);
+    pageBg.style.setProperty("--bg-image", `url('${versioned}')`);
+    sleeveFront.style.setProperty("--sleeve-image", `url('${versioned}')`);
   }
 
   function setCover(src, fade = false) {
@@ -178,40 +203,23 @@
     }
   }
 
-  function showSleeveAtCenter() {
-    sleeve.classList.remove("hidden");
-    sleeve.classList.remove("left");
-    record.classList.remove("left");
-  }
+  async function sleevePullOutAnimation() {
+    // Start state: sleeve closed in the middle, record/tape hidden inside, needle points down.
+    resetClosedSleeve();
+    await wait(220);
 
-  function moveSleeveAndTapeLeft() {
-    sleeve.classList.add("left");
-    record.classList.add("left");
-  }
-
-  function hideSleeveOnLeft() {
-    sleeve.classList.add("hidden");
-  }
-
-  async function pullTapeOutAnimation() {
-    // 1. Everything starts tucked inside the sleeve.
-    showSleeveAtCenter();
-    record.classList.add("in-sleeve");
-    tonearm.classList.remove("on");
-    await wait(260);
-
-    // 2. Sleeve moves left first, like the older version.
-    moveSleeveAndTapeLeft();
+    // Step 1: the sleeve moves left first.
+    setSleevesLeft(true);
     await wait(760);
 
-    // 3. Tape/record gets pulled out to the middle.
-    record.classList.remove("in-sleeve");
+    // Step 2: the record/tape is pulled out from the left sleeve into the center.
+    record.classList.remove("inside");
     record.classList.remove("left");
-    await wait(880);
+    await wait(900);
 
-    // 4. Sleeve disappears after the tape/record is out.
-    hideSleeveOnLeft();
-    await wait(180);
+    // Step 3: the sleeve stays left and disappears after the tape/record is out.
+    hideSleeves();
+    await wait(220);
   }
 
   async function makeAudioAudibleAfterAnimation(startedMuted) {
@@ -261,16 +269,15 @@
       audio.src = withVersion(track.audio);
       audio.load();
 
-      // iPhone/Safari needs play() to happen right after the user's tap.
-      // So we start it muted now, reset it after the pull-out animation,
-      // then make it audible when the tape/record is fully out.
+      // Safari/iPhone needs play() to happen immediately after the user's tap.
+      // We start muted right away, then reset to 0 and unmute after the sleeve animation.
       let mutedPlayPromise = Promise.resolve(false);
       if (shouldAutoplay) {
         suppressPlaybackUI = true;
         mutedPlayPromise = safePlay({ muted: true });
       }
 
-      await pullTapeOutAnimation();
+      await sleevePullOutAnimation();
 
       if (shouldAutoplay) {
         const startedMuted = await mutedPlayPromise;
@@ -305,13 +312,9 @@
     if (config.tonearmImage) tonearmImg.src = withVersion(config.tonearmImage);
     setCover(config.defaultCover || (tracks[0] && tracks[0].images && tracks[0].images[0]), false);
 
-    // Start screen: sleeve covers the tape/record, and the needle points down.
-    showSleeveAtCenter();
-    record.classList.add("in-sleeve");
-    tonearm.classList.remove("hidden");
-    tonearm.classList.remove("on");
+    // Initial screen: sleeve is closed; tape/record is inside; needle points down.
+    resetClosedSleeve();
 
-    // Preload images so switching feels smoother.
     [config.defaultCover, ...(tracks.flatMap((track) => track.images || []))]
       .filter(Boolean)
       .forEach((src) => {

@@ -1,16 +1,35 @@
-CHECKED OK - generated package manifest
+ANNIVERSARY MEMORY PLAYER BASIC v4
+Checked package: upload-ready GitHub root
 
-README_START_HERE.txt	1277 bytes	sha256:607a489c8aa77339213901ba76f4ffdea24c7db51c3e0b533f7e5d0c604c4142
-audio/README_AUDIO_NAMES.txt	163 bytes	sha256:8b771aa67e6b40f047f240f8d3dd4873519200ffecf26d9dda88571840d3ceeb
-audio/song1.mp3	641088 bytes	sha256:f3878628c2cfbdfe94248f9559abc971c9561f03e5b3bcd383dfccd7e112b14c
-audio/song2.mp3	641088 bytes	sha256:53f1eea2e6b33477e5e996454336935bf3a88f9c080666c07a5b2c9de3e401c8
-config.js	1365 bytes	sha256:a5b58483f33d0798c4519e10c0683e124f386113443b69634e04d4d806e7dce7
-images/README_IMAGE_NAMES.txt	189 bytes	sha256:acd8ca0c31ba3df15671e80419b85b8ff48df6036a4fc406673f1cfb3d6aa93a
-images/song1-image1.png	3874665 bytes	sha256:b5246a49a5b78b8f9fa46ca081b52e7d4bf5928495839effad6cc50a8f07efb0
-images/song1-image2.png	3063733 bytes	sha256:57c3763580f9a5c51f3cbcff43ebabdf8208cee6e57405ef1e153dba18977195
-images/song2-image1.png	3240799 bytes	sha256:4955b4ed13475ee81037742a3ed8bd89fa07c2aa5fd85cb4741da64358ee8cf3
-images/song2-image2.png	3056131 bytes	sha256:7b309a39ffe83f5776db642a8855595897beb9ddee6f59a882a6bc83b1d28d2c
-images/tonearm.png	339480 bytes	sha256:0bd29df3676103b3d8144318f108c21e2d8537eb8444ffd7c1e7e1c1924e2e03
-index.html	2671 bytes	sha256:72eee1773beea22c6e08f8ef6aa4d1fcce451c05f6e83e3565ebd4916c1f8730
-script.js	12433 bytes	sha256:b6ae3520b05c86043564fc370f35f66e8f31fde4e4d0bb7971edecb63e2288dc
-style.css	9516 bytes	sha256:fd74f62fb36fed51ada184a67d1af974f1460ce606e5cf1c116afb8db478fee7
+Main v4 changes:
+- Real split sleeve animation: sleeve-back + record/tape + sleeve-front.
+- On page open, the sleeve is closed in the center and the record/tape is inside.
+- On play, the sleeve moves left first.
+- After sleeve moves left, the record/tape pulls out to the center.
+- Audio becomes audible only after the pull-out animation.
+- Needle/tonearm OFF position points down and away from the record.
+- Needle/tonearm PLAYING position moves onto the record.
+- cacheVersion set to v4.
+
+Upload these to the GitHub repo root:
+index.html
+style.css
+script.js
+config.js
+README_START_HERE.txt
+CHECKED_OK_MANIFEST.txt
+audio/
+images/
+
+Expected repo root after upload:
+/index.html
+/style.css
+/script.js
+/config.js
+/audio/song1.mp3
+/audio/song2.mp3
+/images/song1-image1.png
+/images/song1-image2.png
+/images/song2-image1.png
+/images/song2-image2.png
+/images/tonearm.png
