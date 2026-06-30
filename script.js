@@ -247,7 +247,7 @@
   function updateButtons() {
     const started = currentTrackIndex >= 0;
     mainBtn.textContent = started ? "NEXT MEMORY" : (config.startButtonText || "▶ START MEMORY");
-    playBtn.textContent = audio.paused || audio.muted || progressLocked ? "▶" : "Ⅱ";
+    if (playBtn) playBtn.textContent = audio.paused || audio.muted || progressLocked ? "▶" : "Ⅱ";
   }
 
   function makeShuffledOrder() {
@@ -339,7 +339,7 @@
     mainBtn.disabled = true;
     prevBtn.disabled = true;
     nextBtn.disabled = true;
-    playBtn.disabled = true;
+    if (playBtn) playBtn.disabled = true;
 
     const track = tracks[index];
     const useIntroAnimation = !stageOpened;
@@ -402,7 +402,7 @@
       mainBtn.disabled = false;
       prevBtn.disabled = false;
       nextBtn.disabled = false;
-      playBtn.disabled = false;
+      if (playBtn) playBtn.disabled = false;
       updateButtons();
     }
   }
@@ -410,18 +410,17 @@
   async function startExistingTrack() {
     if (busy) return;
     busy = true;
-    playBtn.disabled = true;
+    if (playBtn) playBtn.disabled = true;
     try {
       progressLocked = true;
       suppressPlaybackUI = true;
-      setProgressAtStart();
       await needleToPlay();
       suppressPlaybackUI = false;
       progressLocked = false;
       await safePlay({ muted: false });
     } finally {
       busy = false;
-      playBtn.disabled = false;
+      if (playBtn) playBtn.disabled = false;
       updateButtons();
     }
   }
@@ -429,7 +428,7 @@
   async function pauseExistingTrack() {
     if (busy) return;
     busy = true;
-    playBtn.disabled = true;
+    if (playBtn) playBtn.disabled = true;
     try {
       audio.pause();
       disc.classList.remove("playing");
@@ -437,7 +436,7 @@
       await needleToRest();
     } finally {
       busy = false;
-      playBtn.disabled = false;
+      if (playBtn) playBtn.disabled = false;
       updateButtons();
     }
   }
@@ -476,7 +475,7 @@
       songTitle.textContent = "Add songs in config.js";
       songNote.textContent = "No tracks found";
       mainBtn.disabled = true;
-      playBtn.disabled = true;
+      if (playBtn) playBtn.disabled = true;
       prevBtn.disabled = true;
       nextBtn.disabled = true;
     }
@@ -485,7 +484,7 @@
   mainBtn.addEventListener("click", () => playTrack(nextTrackIndex(), true));
   nextBtn.addEventListener("click", () => playTrack(nextTrackIndex(), true));
   prevBtn.addEventListener("click", () => playTrack(previousTrackIndex(), true));
-  playBtn.addEventListener("click", togglePlayPause);
+  if (playBtn) playBtn.addEventListener("click", togglePlayPause);
 
   record.addEventListener("click", () => {
     clickCount += 1;

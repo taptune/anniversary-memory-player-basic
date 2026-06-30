@@ -1,4 +1,4 @@
-ANNIVERSARY MEMORY PLAYER BASIC V7 - CHANGED FILES ONLY
+ANNIVERSARY MEMORY PLAYER BASIC V8 - CHANGED FILES ONLY
 
 This zip intentionally does NOT include audio/ or images/.
 Keep your existing GitHub audio/ and images/ folders.
@@ -10,12 +10,10 @@ Changed files included:
 - config.js
 - CHECKED_OK_MANIFEST.txt
 
-V7 fixes:
-- Audio no longer starts muted during animation.
-- White progress bar stays at 0:00 until all intro / song-change animation is done.
-- Needle positions are made much more obvious:
-  pause/rest = lower and farther out, closer to your red guide.
-  play = farther inward onto the record, closer to your green guide.
-- Needle lift motion is stronger and more visible.
-- Sleeve still only opens on first start; changing songs does not move sleeve back to center.
-- cacheVersion updated to v7.
+V8 fixes:
+- Removed the small play / pause button next to the progress bar.
+- Record tap is still used for Play/Pause.
+- Bottom hint text changed to: Single Tap = Play/Pause  Double Tap = Image change
+- Needle/tonearm base no longer translates/moves between pause and play states.
+- Needle now swings around one fixed pivot/base.
+- cacheVersion updated to v8.
