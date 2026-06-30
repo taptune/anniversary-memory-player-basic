@@ -25,6 +25,8 @@
   const currentTime = $("currentTime");
   const duration = $("duration");
   const hintText = $("hintText");
+  const sleeveSmallText = $("sleeveSmallText");
+  const sleeveBigText = $("sleeveBigText");
 
   let currentTrackIndex = -1;
   let currentImageIndex = 0;
@@ -36,10 +38,7 @@
   let shuffledOrder = [];
   let shuffledPointer = -1;
 
-  // This is the important v5 fix:
-  // Safari/iPhone sometimes needs a muted play() immediately after the tap.
-  // While that hidden unlock is happening, we freeze the progress bar at 0:00
-  // so it does not look like the song started during the sleeve/needle animation.
+  // V10: audio starts only after the animation is done, so the progress bar stays frozen.
   let suppressPlaybackUI = false;
   let progressLocked = false;
   let needleToken = 0;
@@ -54,6 +53,12 @@
 
   function wait(ms) {
     return new Promise((resolve) => window.setTimeout(resolve, ms));
+  }
+
+  function textFor(key, fallback) {
+    const siteText = config.siteText || {};
+    // This keeps older config files working too.
+    return siteText[key] ?? config[key] ?? fallback;
   }
 
   function sleeveElements() {
@@ -80,44 +85,28 @@
 
   async function needleToPlay() {
     const token = ++needleToken;
-    tonearm.classList.add("lifted");
-    await wait(170);
-    if (token !== needleToken) return;
-
+    // V10: no translate / no jump. The fixed base stays in place; only rotation changes.
     tonearm.classList.add("on");
-    await wait(520);
+    await wait(620);
     if (token !== needleToken) return;
-
     tonearm.classList.remove("lifted");
-    await wait(210);
   }
 
   async function needleToRest() {
     const token = ++needleToken;
-    tonearm.classList.add("lifted");
-    await wait(170);
-    if (token !== needleToken) return;
-
     tonearm.classList.remove("on");
-    await wait(520);
+    await wait(620);
     if (token !== needleToken) return;
-
     tonearm.classList.remove("lifted");
-    await wait(180);
   }
 
   async function needleReCueOnRecord() {
     const token = ++needleToken;
+    // Keep the base fixed and avoid the jumping lift effect during song changes.
     tonearm.classList.add("on");
-    tonearm.classList.add("lifted");
-    await wait(190);
+    await wait(260);
     if (token !== needleToken) return;
-
-    await wait(120);
-    if (token !== needleToken) return;
-
     tonearm.classList.remove("lifted");
-    await wait(200);
   }
 
   function resetClosedSleeve() {
@@ -246,7 +235,7 @@
 
   function updateButtons() {
     const started = currentTrackIndex >= 0;
-    mainBtn.textContent = started ? "NEXT MEMORY" : (config.startButtonText || "▶ START MEMORY");
+    mainBtn.textContent = started ? textFor("nextMemoryButtonText", "NEXT MEMORY") : textFor("startButtonText", "▶ START MEMORY");
     if (playBtn) playBtn.textContent = audio.paused || audio.muted || progressLocked ? "▶" : "Ⅱ";
   }
 
@@ -285,7 +274,7 @@
       audio.muted = false;
       suppressPlaybackUI = false;
       progressLocked = false;
-      songNote.textContent = track ? "Tap play to start audio" : "Tap Start Memory";
+      songNote.textContent = track ? textFor("tapToStartAudioText", "Tap play to start audio") : textFor("tapStartMemoryText", "Tap Start Memory");
       return false;
     }
   }
@@ -451,11 +440,16 @@
   }
 
   function init() {
-    document.title = `${config.artistName || "Anniversary"} Player`;
-    artistName.textContent = config.artistName || "OUR MOMENTS";
-    songTitle.textContent = config.startTitle || "Our Anniversary";
-    songNote.textContent = config.startNote || "SCAN • TAP • REMEMBER";
-    mainBtn.textContent = config.startButtonText || "▶ START MEMORY";
+    document.title = textFor("browserTitle", "Anniversary Memory Player");
+    artistName.textContent = textFor("artistName", "OUR MOMENTS");
+    songTitle.textContent = textFor("startTitle", "Our Anniversary");
+    songNote.textContent = textFor("startNote", "SCAN • TAP • REMEMBER");
+    mainBtn.textContent = textFor("startButtonText", "▶ START MEMORY");
+    prevBtn.textContent = textFor("prevButtonText", "PREV");
+    nextBtn.textContent = textFor("nextButtonText", "NEXT");
+    hintText.textContent = textFor("bottomHint", "Single Tap = Play/Pause  Double Tap = Image change");
+    if (sleeveSmallText) sleeveSmallText.textContent = textFor("sleeveSmallText", "MEMORY");
+    if (sleeveBigText) sleeveBigText.textContent = textFor("sleeveBigText", "LP");
 
     if (config.tonearmImage) tonearmImg.src = withVersion(config.tonearmImage);
     setCover(config.defaultCover || (tracks[0] && tracks[0].images && tracks[0].images[0]), false);
@@ -472,8 +466,8 @@
       });
 
     if (!tracks.length) {
-      songTitle.textContent = "Add songs in config.js";
-      songNote.textContent = "No tracks found";
+      songTitle.textContent = textFor("noTracksTitle", "Add songs in config.js");
+      songNote.textContent = textFor("noTracksNote", "No tracks found");
       mainBtn.disabled = true;
       if (playBtn) playBtn.disabled = true;
       prevBtn.disabled = true;
@@ -527,7 +521,7 @@
 
   audio.addEventListener("error", () => {
     const track = activeTrack();
-    songNote.textContent = track ? `Audio missing: ${track.audio}` : "Audio file missing";
+    songNote.textContent = track ? `${textFor("audioMissingPrefix", "Audio missing:")} ${track.audio}` : textFor("audioMissingPrefix", "Audio missing:");
     suppressPlaybackUI = false;
     progressLocked = false;
   });

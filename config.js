@@ -1,12 +1,11 @@
 /*
   BASIC ANNIVERSARY PLAYER CONFIG
 
-  The easiest way to manage this project:
-  1. Replace files in the folders, but keep the same names.
-  2. Only edit this file for text or more songs.
-  3. When you replace audio/images on GitHub Pages, change cacheVersion to a new value.
+  EDIT WORDS HERE:
+  Most of the website text is inside siteText below.
+  Example: change "OUR MOMENTS" to your brand name, couple name, or anything else.
 
-  Current file names:
+  File names stay the same unless you also change the paths below:
   audio/song1.mp3
   audio/song2.mp3
 
@@ -17,12 +16,36 @@
 */
 
 const PLAYER_CONFIG = {
-  cacheVersion: "v8", // Change to v2, v3, etc. after replacing files online.
+  cacheVersion: "v10", // Change to v10, v11, etc. after replacing files online.
 
-  artistName: "OUR MOMENTS",
-  startTitle: "Our Anniversary",
-  startNote: "SCAN • TAP • REMEMBER",
-  startButtonText: "▶ START MEMORY",
+  siteText: {
+    browserTitle: "Anniversary Memory Player",
+
+    // Top words before any song starts
+    artistName: "OUR MOMENTS",
+    startTitle: "Our Anniversary",
+    startNote: "SCAN • TAP • REMEMBER",
+
+    // Button words
+    startButtonText: "▶ START MEMORY",
+    nextMemoryButtonText: "NEXT MEMORY",
+    prevButtonText: "PREV",
+    nextButtonText: "NEXT",
+
+    // Words printed on the sleeve
+    sleeveSmallText: "MEMORY",
+    sleeveBigText: "LP",
+
+    // Small words at the bottom
+    bottomHint: "Single Tap = Play/Pause  Double Tap = Image change",
+
+    // Error / empty state words
+    noTracksTitle: "Add songs in config.js",
+    noTracksNote: "No tracks found",
+    tapToStartAudioText: "Tap play to start audio",
+    tapStartMemoryText: "Tap Start Memory",
+    audioMissingPrefix: "Audio missing:"
+  },
 
   // sequence = Song 1 then Song 2. shuffle = random order.
   playOrder: "sequence",

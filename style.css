@@ -319,10 +319,13 @@ button{font:inherit;}
   border:1px solid rgba(255,255,255,.38);
 }
 
+/* Hide old play/pause button even if an older index.html is still cached. */
+#playBtn{display:none!important;}
+
 .tonearm{
   position:absolute;
-  right:2px;
-  top:16px;
+  right:0px;
+  top:8px;
   width:238px;
   height:276px;
   z-index:8;
@@ -334,19 +337,22 @@ button{font:inherit;}
   width:100%;
   height:100%;
   object-fit:contain;
-  transform-origin:84% 17%;
-  --needle-rot:-58deg;
-  /* V8: no translate here, so the needle base/pivot stays fixed. */
+
+  /* V10: fixed pivot.
+     This point is the black rounded base of the tonearm.
+     No translate is used, so the base stays stuck in one place. */
+  transform-origin:77% 25.5%;
+  --needle-rot:-44deg;
   transform:rotate(var(--needle-rot));
-  transition:transform .62s cubic-bezier(.18,.85,.2,1), filter .2s ease;
+  transition:transform .58s cubic-bezier(.18,.85,.2,1), filter .18s ease;
 }
 .tonearm.lifted img{
-  /* Lifting feeling without moving the base: tiny rotation only, pivot stays fixed. */
-  transform:rotate(calc(var(--needle-rot) - 5deg));
-  filter:brightness(1.12) drop-shadow(0 10px 12px rgba(255,255,255,.12));
+  /* Lift effect removed for now because it made the base look like it jumps. */
+  transform:rotate(var(--needle-rot));
+  filter:brightness(1.06);
 }
 .tonearm.on img{
-  /* PLAYING position swings inward around the same fixed base. */
+  /* Playing position: swings onto the record from the fixed base. */
   --needle-rot:-18deg;
 }
 
@@ -382,7 +388,7 @@ audio{display:none;}
   .top-text{min-height:112px;}
   .artist{font-size:12px;letter-spacing:5px;}
   .song-title{min-height:70px;}
-  .tonearm{right:-12px;top:14px;transform:scale(.82);transform-origin:top right;}
+  .tonearm{right:-8px;top:10px;transform:scale(.82);transform-origin:top right;}
   .memory-buttons{gap:8px;}
   .main-btn{min-width:160px;padding:15px 18px;font-size:14px;}
   .small-btn{padding:12px 11px;}

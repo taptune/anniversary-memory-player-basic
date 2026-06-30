@@ -1,19 +1,19 @@
-ANNIVERSARY MEMORY PLAYER BASIC V8 - CHANGED FILES ONLY
+Anniversary Memory Player Basic v10 - CHANGED FILES ONLY
 
-This zip intentionally does NOT include audio/ or images/.
-Keep your existing GitHub audio/ and images/ folders.
-
-Changed files included:
+Included files:
 - index.html
 - style.css
 - script.js
 - config.js
 - CHECKED_OK_MANIFEST.txt
 
-V8 fixes:
-- Removed the small play / pause button next to the progress bar.
-- Record tap is still used for Play/Pause.
-- Bottom hint text changed to: Single Tap = Play/Pause  Double Tap = Image change
-- Needle/tonearm base no longer translates/moves between pause and play states.
-- Needle now swings around one fixed pivot/base.
-- cacheVersion updated to v8.
+Not included:
+- audio/
+- images/
+
+V10 fixes:
+- Removed/hid the play-pause button beside the progress bar.
+- Needle base uses a fixed pivot at the black rounded base.
+- Removed the lift transform because it made the base jump.
+- Audio does not start during the intro animation; progress stays at 0 until animation finishes.
+- cacheVersion updated to v10.
