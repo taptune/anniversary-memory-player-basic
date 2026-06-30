@@ -23,3 +23,10 @@ V12 notes:
 - Sleeve now stays visible parked on the left after the first opening animation.
 - Changing songs does not bring the sleeve back to the middle and does not hide it.
 - cacheVersion updated to v12.
+
+V13 notes:
+- Changed-files-only package. No audio or images included.
+- Song change animation added: sleeve appears on the left, old tape moves into it, new tape slides in from the side, then sleeve disappears.
+- First start still uses the sleeve pull-out animation.
+- Image spam lock from v12 is kept.
+- cacheVersion updated to v13.

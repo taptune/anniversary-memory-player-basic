@@ -69,6 +69,9 @@
 
   function setSleevesLeft(isLeft) {
     sleeveElements().forEach((el) => el.classList.toggle("left", isLeft));
+  }
+
+  function setRecordLeft(isLeft) {
     record.classList.toggle("left", isLeft);
   }
 
@@ -82,6 +85,12 @@
 
   function hideSleeves() {
     sleeveElements().forEach((el) => el.classList.add("hidden"));
+  }
+
+  function prepareSleeveOnLeft() {
+    showSleeves();
+    setSleevesParked(false);
+    setSleevesLeft(true);
   }
 
   function needleInstantRest() {
@@ -119,18 +128,21 @@
     showSleeves();
     setSleevesParked(false);
     setSleevesLeft(false);
+    setRecordLeft(false);
+    record.classList.remove("enter-side", "no-transition");
     record.classList.add("inside");
     needleInstantRest();
     stageOpened = false;
   }
 
   function keepStageOpen() {
-    // V12: keep the sleeve visible, parked on the left.
-    // It should not come back to the middle or disappear when changing songs.
-    showSleeves();
+    // V13: normal playing state = tape/record stays out, sleeve is hidden.
+    // The sleeve only appears during the opening animation or the song-change animation.
     setSleevesLeft(true);
-    setSleevesParked(true);
-    record.classList.remove("inside", "left");
+    setSleevesParked(false);
+    hideSleeves();
+    setRecordLeft(false);
+    record.classList.remove("inside", "enter-side", "no-transition");
     stageOpened = true;
   }
 
@@ -302,23 +314,51 @@
   }
 
   async function sleevePullOutAnimation() {
-    // Start state: sleeve closed in the middle, record/tape hidden inside, needle points down.
+    // First start: sleeve starts closed in the middle. Then sleeve + tape go left,
+    // tape comes out to the center, and the sleeve disappears.
     resetClosedSleeve();
-    await wait(220);
+    await wait(200);
 
-    // Step 1: the sleeve moves left first.
     setSleevesLeft(true);
-    await wait(760);
+    setRecordLeft(true);
+    await wait(720);
 
-    // Step 2: the record/tape is pulled out from the left sleeve into the center.
     record.classList.remove("inside");
-    record.classList.remove("left");
-    await wait(900);
+    setRecordLeft(false);
+    await wait(820);
 
-    // V12: keep the sleeve parked on the left. Do not hide it.
-    showSleeves();
-    setSleevesLeft(true);
-    setSleevesParked(true);
+    hideSleeves();
+    stageOpened = true;
+    await wait(120);
+  }
+
+  async function tapeChangeAnimationBeforeSwap() {
+    // Song change part 1:
+    // sleeve spawns/appears on the left, then the current tape slides back into it.
+    prepareSleeveOnLeft();
+    await wait(180);
+
+    setRecordLeft(true);
+    record.classList.add("inside");
+    await wait(720);
+  }
+
+  async function tapeChangeAnimationAfterSwap() {
+    // Song change part 2:
+    // after the cover/audio has been swapped, the new tape slides in from the side.
+    record.classList.add("no-transition");
+    setRecordLeft(false);
+    record.classList.remove("inside");
+    record.classList.add("enter-side");
+    // Force browser to lock in the start position before animating back to center.
+    record.getBoundingClientRect();
+
+    record.classList.remove("no-transition");
+    await wait(40);
+    record.classList.remove("enter-side");
+    await wait(780);
+
+    hideSleeves();
     stageOpened = true;
     await wait(120);
   }
@@ -347,6 +387,20 @@
     updateButtons();
   }
 
+  async function loadTrackData(index, fadeImage = false) {
+    const track = tracks[index];
+    currentTrackIndex = index;
+    currentImageIndex = 0;
+    songTitle.textContent = track.title || `Song ${index + 1}`;
+    songNote.textContent = track.note || `Memory ${index + 1}`;
+    showImage(0, fadeImage);
+    resetProgress();
+
+    audio.src = withVersion(track.audio);
+    audio.load();
+    try { audio.currentTime = 0; } catch (error) {}
+  }
+
   async function playTrack(index, shouldAutoplay = true) {
     if (busy || index < 0 || !tracks[index]) return;
     busy = true;
@@ -355,52 +409,30 @@
     nextBtn.disabled = true;
     if (playBtn) playBtn.disabled = true;
 
-    const track = tracks[index];
-    const useIntroAnimation = !stageOpened;
-    const wasNeedleOnRecord = tonearm.classList.contains("on");
+    const useIntroAnimation = !stageOpened || currentTrackIndex < 0;
 
     try {
       stopImageTimer();
       audio.pause();
       audio.muted = false;
       suppressPlaybackUI = false;
-      progressLocked = false;
+      progressLocked = true;
       disc.classList.remove("playing");
+      setProgressAtStart();
 
       if (useIntroAnimation) {
         needleInstantRest();
-      } else {
-        keepStageOpen();
-      }
-
-      currentTrackIndex = index;
-      currentImageIndex = 0;
-      songTitle.textContent = track.title || `Song ${index + 1}`;
-      songNote.textContent = track.note || `Memory ${index + 1}`;
-      showImage(0, !useIntroAnimation);
-      resetProgress();
-
-      audio.src = withVersion(track.audio);
-      audio.load();
-      try { audio.currentTime = 0; } catch (error) {}
-
-      // Freeze the visible progress during the intro / track-change animation.
-      progressLocked = true;
-      suppressPlaybackUI = true;
-      setProgressAtStart();
-
-      // v7: do NOT start audio, even muted, during the animation.
-      // This keeps the white progress bar frozen at 0:00 until the sleeve + needle motion is finished.
-      if (useIntroAnimation) {
+        await loadTrackData(index, false);
         await sleevePullOutAnimation();
-        stageOpened = true;
         await needleToPlay();
-      } else if (shouldAutoplay) {
-        if (wasNeedleOnRecord) {
-          await needleReCueOnRecord();
-        } else {
-          await needleToPlay();
-        }
+      } else {
+        // V13 song-change animation:
+        // sleeve appears on the left → old tape slides into sleeve → new tape slides in from the side → sleeve disappears.
+        await needleToRest();
+        await tapeChangeAnimationBeforeSwap();
+        await loadTrackData(index, false);
+        await tapeChangeAnimationAfterSwap();
+        await needleToPlay();
       }
 
       if (shouldAutoplay) {

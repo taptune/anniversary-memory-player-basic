@@ -231,7 +231,7 @@ button{font:inherit;}
   top:50%;
   width:var(--record-size);
   height:var(--record-size);
-  transform:translate(calc(-50% + var(--record-x,0px)),-50%) scale(var(--record-scale,1));
+  transform:translate(calc(-50% + var(--record-x,0px)),calc(-50% + var(--record-y,0px))) scale(var(--record-scale,1));
   border:none;
   padding:0;
   border-radius:50%;
@@ -244,6 +244,8 @@ button{font:inherit;}
 }
 .record.left{--record-x:var(--pull-left);}
 .record.inside{--record-scale:.78;filter:brightness(.78);}
+.record.enter-side{--record-x:178px;--record-y:-84px;--record-scale:.82;opacity:0;filter:brightness(.92);}
+.record.no-transition{transition:none!important;}
 
 .disc{
   position:relative;
