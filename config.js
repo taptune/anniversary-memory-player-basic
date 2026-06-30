@@ -1,5 +1,5 @@
 /*
-  EASY ANNIVERSARY PLAYER CONFIG
+  BASIC ANNIVERSARY PLAYER CONFIG
 
   The easiest way to manage this project:
   1. Replace files in the folders, but keep the same names.
@@ -17,7 +17,7 @@
 */
 
 const PLAYER_CONFIG = {
-  cacheVersion: "v1", // Change to v2, v3, etc. after replacing files online.
+  cacheVersion: "v3", // Change to v2, v3, etc. after replacing files online.
 
   artistName: "OUR MOMENTS",
   startTitle: "Our Anniversary",

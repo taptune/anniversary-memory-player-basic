@@ -9,7 +9,8 @@
   --record-size:282px;
   --sleeve-size:304px;
   --stage-height:350px;
-  --record-shift:-82px;
+  --sleeve-left:-132px;
+  --record-left:-132px;
 }
 
 html,body{
@@ -125,9 +126,9 @@ button{
   height:var(--sleeve-size);
   left:50%;
   top:50%;
-  transform:translate(-50%,-50%);
+  transform:translate(calc(-50% + var(--sleeve-x, 0px)),-50%);
   border-radius:24px;
-  z-index:2;
+  z-index:5;
   pointer-events:none;
   overflow:hidden;
   background:
@@ -136,7 +137,10 @@ button{
   box-shadow:
     0 30px 65px rgba(0,0,0,.58),
     inset 0 0 0 1px rgba(255,255,255,.12);
-  transition:transform .72s cubic-bezier(.22,.9,.18,1), opacity .35s ease;
+  transition:
+    transform .78s cubic-bezier(.22,.9,.18,1),
+    opacity .38s ease,
+    visibility 0s linear 0s;
 }
 
 .sleeve::before{
@@ -190,9 +194,14 @@ button{
   line-height:.88;
 }
 
+.sleeve.left{
+  --sleeve-x:var(--sleeve-left);
+}
+
 .sleeve.hidden{
   opacity:0;
-  transform:translate(calc(-50% + 22px),-50%) scale(.97);
+  visibility:hidden;
+  transform:translate(calc(-50% + var(--sleeve-left)),-50%) scale(.98);
 }
 
 .record{
@@ -201,7 +210,7 @@ button{
   top:50%;
   width:var(--record-size);
   height:var(--record-size);
-  transform:translate(-50%,-50%);
+  transform:translate(calc(-50% + var(--record-x, 0px)),-50%) scale(var(--record-scale,1));
   border:none;
   padding:0;
   border-radius:50%;
@@ -213,9 +222,13 @@ button{
 }
 
 .record.in-sleeve{
-  transform:translate(calc(-50% + var(--record-shift)),-50%) scale(.82);
-  z-index:1;
+  --record-scale:.78;
+  z-index:3;
   filter:brightness(.78);
+}
+
+.record.left{
+  --record-x:var(--record-left);
 }
 
 .disc{
@@ -318,7 +331,6 @@ button{
   pointer-events:none;
   filter:drop-shadow(0 16px 24px rgba(0,0,0,.7));
   opacity:1;
-  transition:opacity .3s ease;
 }
 
 .tonearm.hidden{
@@ -330,11 +342,13 @@ button{
   height:100%;
   object-fit:contain;
   transform-origin:84% 17%;
-  transform:rotate(19deg);
-  transition:transform .5s cubic-bezier(.2,.85,.2,1);
+  /* OFF position: the needle points down, away from the tape. */
+  transform:rotate(-52deg);
+  transition:transform .58s cubic-bezier(.2,.85,.2,1);
 }
 
 .tonearm.on img{
+  /* PLAYING position: the needle drops onto the tape/record. */
   transform:rotate(-15deg);
 }
 
@@ -450,7 +464,8 @@ audio{
     --record-size:258px;
     --sleeve-size:278px;
     --stage-height:326px;
-    --record-shift:-72px;
+    --sleeve-left:-124px;
+    --record-left:-124px;
   }
 
   body{

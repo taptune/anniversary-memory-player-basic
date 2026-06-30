@@ -35,12 +35,17 @@
   let clickCount = 0;
   let shuffledOrder = [];
   let shuffledPointer = -1;
+  let suppressPlaybackUI = false;
 
   function withVersion(src) {
     if (!src) return "";
     const version = config.cacheVersion ? String(config.cacheVersion) : "v1";
     const joiner = src.includes("?") ? "&" : "?";
     return `${src}${joiner}v=${encodeURIComponent(version)}`;
+  }
+
+  function wait(ms) {
+    return new Promise((resolve) => window.setTimeout(resolve, ms));
   }
 
   function setBackground(src) {
@@ -108,9 +113,9 @@
   function restartImageTimer() {
     stopImageTimer();
     const seconds = Number(config.autoChangeImageEverySeconds || 8);
-    if (!activeTrack() || audio.paused || seconds <= 0) return;
+    if (!activeTrack() || audio.paused || audio.muted || seconds <= 0) return;
     imageTimer = window.setInterval(() => {
-      if (!audio.paused && !busy) nextImage(true);
+      if (!audio.paused && !audio.muted && !busy) nextImage(true);
     }, seconds * 1000);
   }
 
@@ -131,7 +136,7 @@
   function updateButtons() {
     const started = currentTrackIndex >= 0;
     mainBtn.textContent = started ? "NEXT MEMORY" : (config.startButtonText || "▶ START MEMORY");
-    playBtn.textContent = audio.paused ? "▶" : "Ⅱ";
+    playBtn.textContent = audio.paused || audio.muted ? "▶" : "Ⅱ";
   }
 
   function makeShuffledOrder() {
@@ -159,29 +164,73 @@
     return (currentTrackIndex - 1 + tracks.length) % tracks.length;
   }
 
-  async function safePlay() {
+  async function safePlay(options = {}) {
     try {
+      if (typeof options.muted === "boolean") audio.muted = options.muted;
       await audio.play();
+      return true;
     } catch (error) {
       const track = activeTrack();
+      audio.muted = false;
+      suppressPlaybackUI = false;
       songNote.textContent = track ? "Tap play to start audio" : "Tap Start Memory";
+      return false;
     }
   }
 
-  function wait(ms) {
-    return new Promise((resolve) => window.setTimeout(resolve, ms));
+  function showSleeveAtCenter() {
+    sleeve.classList.remove("hidden");
+    sleeve.classList.remove("left");
+    record.classList.remove("left");
   }
 
-  async function openRecordAnimation() {
-    sleeve.classList.remove("hidden");
-    record.classList.add("in-sleeve");
-    tonearm.classList.add("hidden");
-    tonearm.classList.remove("on");
-    await wait(340);
-    record.classList.remove("in-sleeve");
-    await wait(680);
+  function moveSleeveAndTapeLeft() {
+    sleeve.classList.add("left");
+    record.classList.add("left");
+  }
+
+  function hideSleeveOnLeft() {
     sleeve.classList.add("hidden");
-    tonearm.classList.remove("hidden");
+  }
+
+  async function pullTapeOutAnimation() {
+    // 1. Everything starts tucked inside the sleeve.
+    showSleeveAtCenter();
+    record.classList.add("in-sleeve");
+    tonearm.classList.remove("on");
+    await wait(260);
+
+    // 2. Sleeve moves left first, like the older version.
+    moveSleeveAndTapeLeft();
+    await wait(760);
+
+    // 3. Tape/record gets pulled out to the middle.
+    record.classList.remove("in-sleeve");
+    record.classList.remove("left");
+    await wait(880);
+
+    // 4. Sleeve disappears after the tape/record is out.
+    hideSleeveOnLeft();
+    await wait(180);
+  }
+
+  async function makeAudioAudibleAfterAnimation(startedMuted) {
+    suppressPlaybackUI = false;
+
+    if (!startedMuted || audio.paused) {
+      await safePlay({ muted: false });
+    } else {
+      try { audio.currentTime = 0; } catch (error) {}
+      audio.muted = false;
+    }
+
+    if (!audio.paused && !audio.muted) {
+      disc.classList.add("playing");
+      tonearm.classList.add("on");
+      restartImageTimer();
+    }
+
+    updateButtons();
   }
 
   async function playTrack(index, shouldAutoplay = true) {
@@ -197,6 +246,8 @@
     try {
       stopImageTimer();
       audio.pause();
+      audio.muted = false;
+      suppressPlaybackUI = false;
       disc.classList.remove("playing");
       tonearm.classList.remove("on");
 
@@ -210,12 +261,21 @@
       audio.src = withVersion(track.audio);
       audio.load();
 
-      // Start audio immediately after the user tap.
-      // This is important for iPhone/Safari because delayed autoplay can be blocked.
-      const playPromise = shouldAutoplay ? safePlay() : Promise.resolve();
+      // iPhone/Safari needs play() to happen right after the user's tap.
+      // So we start it muted now, reset it after the pull-out animation,
+      // then make it audible when the tape/record is fully out.
+      let mutedPlayPromise = Promise.resolve(false);
+      if (shouldAutoplay) {
+        suppressPlaybackUI = true;
+        mutedPlayPromise = safePlay({ muted: true });
+      }
 
-      await openRecordAnimation();
-      await playPromise;
+      await pullTapeOutAnimation();
+
+      if (shouldAutoplay) {
+        const startedMuted = await mutedPlayPromise;
+        await makeAudioAudibleAfterAnimation(startedMuted);
+      }
     } finally {
       busy = false;
       mainBtn.disabled = false;
@@ -231,7 +291,7 @@
       playTrack(nextTrackIndex(), true);
       return;
     }
-    if (audio.paused) safePlay();
+    if (audio.paused) safePlay({ muted: false });
     else audio.pause();
   }
 
@@ -244,6 +304,12 @@
 
     if (config.tonearmImage) tonearmImg.src = withVersion(config.tonearmImage);
     setCover(config.defaultCover || (tracks[0] && tracks[0].images && tracks[0].images[0]), false);
+
+    // Start screen: sleeve covers the tape/record, and the needle points down.
+    showSleeveAtCenter();
+    record.classList.add("in-sleeve");
+    tonearm.classList.remove("hidden");
+    tonearm.classList.remove("on");
 
     // Preload images so switching feels smoother.
     [config.defaultCover, ...(tracks.flatMap((track) => track.images || []))]
@@ -279,10 +345,12 @@
   });
 
   audio.addEventListener("play", () => {
-    disc.classList.add("playing");
-    tonearm.classList.add("on");
+    if (!suppressPlaybackUI && !audio.muted) {
+      disc.classList.add("playing");
+      tonearm.classList.add("on");
+      restartImageTimer();
+    }
     updateButtons();
-    restartImageTimer();
   });
 
   audio.addEventListener("pause", () => {

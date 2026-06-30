@@ -1,66 +1,45 @@
-ANNIVERSARY MEMORY PLAYER - EASY VERSION
+ANNIVERSARY MEMORY PLAYER - BASIC v3
 
-FAST WAY TO USE IT
-1. Open the folder.
-2. Replace the files, but keep the exact same file names.
-3. Upload the whole folder to GitHub Pages.
+This package was rebuilt and tested before sending.
 
-AUDIO FILES
-Put your music here:
+IMPORTANT FOR GITHUB UPLOAD:
+1. Unzip this file.
+2. Open the extracted folder.
+3. Select the CONTENTS inside the folder, not the folder itself.
+4. Upload these to the top level of your GitHub repo:
+   - index.html
+   - style.css
+   - script.js
+   - config.js
+   - README_START_HERE.txt
+   - audio/
+   - images/
 
-audio/song1.mp3
-audio/song2.mp3
-
-IMAGE FILES
-Put your images here:
-
-images/song1-image1.png
-images/song1-image2.png
-images/song2-image1.png
-images/song2-image2.png
-
-CURRENT IMAGE MATCHING
-song1-image1.png = night city walk
-song1-image2.png = sunset beach walk
-song2-image1.png = outdoor night cuddle
-song2-image2.png = indoor cozy cuddle
-
-ONLY EDIT THIS FILE FOR TEXT
-config.js
-
-In config.js you can change:
-- artistName
-- startTitle
-- song titles
-- song notes
-- image switching time
-- playOrder: sequence or shuffle
-
-GITHUB PAGES CACHE FIX
-When you replace audio or images online, open config.js and change:
-cacheVersion: "v1"
-
-to something new, for example:
-cacheVersion: "v2"
-
-Then upload again.
-
-IPHONE / SAFARI NOTE
-iPhone usually blocks autoplay. This player is made for that:
-The visitor taps START MEMORY first, then audio can play.
-
-CONTROLS
-START MEMORY = start the first song
-NEXT = next song
-PREV = previous song
-Play button = play / pause
-Single tap record = play / pause
-Double tap record = change image
-Progress bar = jump to a time in the song
-
-DO NOT DELETE
-images/tonearm.png
+Your GitHub repo top level should look like this:
 index.html
 style.css
 script.js
 config.js
+audio/
+images/
+README_START_HERE.txt
+
+It should NOT look like this:
+anniversary_memory_player_basic/index.html
+
+HOW TO REPLACE FILES:
+- Replace audio/song1.mp3 and audio/song2.mp3 for your songs.
+- Replace images/song1-image1.png, song1-image2.png, song2-image1.png, song2-image2.png for pictures.
+- Keep the same file names to avoid editing code.
+
+WHAT WAS FIXED IN v3:
+- Sleeve starts in the center.
+- Press play: sleeve moves left first.
+- Tape/record pulls out after the sleeve moves.
+- Audio becomes audible only after the pull-out animation.
+- Needle points down when not playing.
+- Needle moves onto the tape/record while playing.
+- cacheVersion is now v3.
+
+If GitHub Pages still shows an old version, test with:
+https://taptune.github.io/anniversary-memory-player-basic/?v=3
