@@ -1,0 +1,31 @@
+ANNIVERSARY MEMORY PLAYER BASIC - v5
+
+Checked package notes:
+- ZIP structure is GitHub upload ready.
+- index.html is at repository root.
+- config.js cacheVersion is v5.
+- script.js syntax check passed.
+- config.js syntax check passed.
+
+V5 changes:
+1. Progress bar stays frozen at 0:00 during sleeve/tape/needle animation.
+2. Hidden muted iPhone/Safari unlock no longer shows moving progress.
+3. Audio resets to 0 and becomes audible only after the animation is finished.
+4. Needle now has a lift -> swing -> drop feeling.
+5. Needle rest/play positions tuned closer to the red/green guide.
+
+Expected GitHub root files:
+index.html
+style.css
+script.js
+config.js
+audio/
+images/
+README_START_HERE.txt
+CHECKED_OK_MANIFEST.txt
+
+V6 notes:
+- Song change no longer closes the sleeve again.
+- After first start, sleeve stays parked and hidden.
+- Track changes use a lighter needle lift / re-cue motion.
+- cacheVersion updated to v6.
