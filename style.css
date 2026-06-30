@@ -137,6 +137,9 @@ button{font:inherit;}
 }
 
 .sleeve.left{--sleeve-x:var(--pull-left);}
+.sleeve.parked{opacity:.78;z-index:1;}
+.sleeve-back.parked{z-index:0;}
+.sleeve-front.parked{z-index:1;}
 .sleeve.hidden{
   opacity:0;
   visibility:hidden;

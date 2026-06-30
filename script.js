@@ -32,6 +32,8 @@
   let currentImageIndex = 0;
   let imageTimer = null;
   let changeToken = 0;
+  let imageTransitioning = false;
+  const imageTransitionMs = 1050;
   let busy = false;
   let clickTimer = null;
   let clickCount = 0;
@@ -74,6 +76,10 @@
     sleeveElements().forEach((el) => el.classList.remove("hidden"));
   }
 
+  function setSleevesParked(isParked) {
+    sleeveElements().forEach((el) => el.classList.toggle("parked", isParked));
+  }
+
   function hideSleeves() {
     sleeveElements().forEach((el) => el.classList.add("hidden"));
   }
@@ -111,6 +117,7 @@
 
   function resetClosedSleeve() {
     showSleeves();
+    setSleevesParked(false);
     setSleevesLeft(false);
     record.classList.add("inside");
     needleInstantRest();
@@ -118,8 +125,11 @@
   }
 
   function keepStageOpen() {
+    // V12: keep the sleeve visible, parked on the left.
+    // It should not come back to the middle or disappear when changing songs.
+    showSleeves();
     setSleevesLeft(true);
-    hideSleeves();
+    setSleevesParked(true);
     record.classList.remove("inside", "left");
     stageOpened = true;
   }
@@ -131,22 +141,29 @@
   }
 
   function setCover(src, fade = false) {
-    if (!src) return;
+    if (!src) return false;
+
+    // V12: block image spam while the fade animation is still running.
+    // This stops rapid double-taps from making the cover transition jump.
+    if (fade && imageTransitioning) return false;
+
     const finalSrc = withVersion(src);
     setBackground(src);
 
     const oldSrc = coverFront.dataset.src || "";
     if (!fade || !oldSrc || oldSrc === finalSrc) {
       changeToken++;
+      imageTransitioning = false;
       coverFront.classList.remove("fade-out");
       coverFront.dataset.src = finalSrc;
       coverBack.dataset.src = finalSrc;
       coverFront.style.backgroundImage = `url('${finalSrc}')`;
       coverBack.style.backgroundImage = `url('${finalSrc}')`;
-      return;
+      return true;
     }
 
     const token = ++changeToken;
+    imageTransitioning = true;
     coverBack.dataset.src = finalSrc;
     coverBack.style.backgroundImage = `url('${finalSrc}')`;
     coverFront.classList.add("fade-out");
@@ -156,7 +173,10 @@
       coverFront.dataset.src = finalSrc;
       coverFront.style.backgroundImage = `url('${finalSrc}')`;
       coverFront.classList.remove("fade-out");
-    }, 1020);
+      imageTransitioning = false;
+    }, imageTransitionMs);
+
+    return true;
   }
 
   function activeTrack() {
@@ -171,15 +191,17 @@
 
   function showImage(index, fade = false) {
     const images = activeImages();
-    currentImageIndex = ((index % images.length) + images.length) % images.length;
-    setCover(images[currentImageIndex], fade);
+    const nextIndex = ((index % images.length) + images.length) % images.length;
+    const changed = setCover(images[nextIndex], fade);
+    if (changed) currentImageIndex = nextIndex;
+    return changed;
   }
 
   function nextImage(fade = true) {
     const images = activeImages();
-    if (images.length < 2 || busy) return;
-    showImage(currentImageIndex + 1, fade);
-    restartImageTimer();
+    if (images.length < 2 || busy || imageTransitioning) return;
+    const changed = showImage(currentImageIndex + 1, fade);
+    if (changed) restartImageTimer();
   }
 
   function stopImageTimer() {
@@ -293,9 +315,12 @@
     record.classList.remove("left");
     await wait(900);
 
-    // Step 3: the sleeve stays left and disappears after the tape/record is out.
-    hideSleeves();
-    await wait(220);
+    // V12: keep the sleeve parked on the left. Do not hide it.
+    showSleeves();
+    setSleevesLeft(true);
+    setSleevesParked(true);
+    stageOpened = true;
+    await wait(120);
   }
 
   async function makeAudioAudibleAfterAnimation(startedMuted) {
@@ -398,36 +423,31 @@
 
   async function startExistingTrack() {
     if (busy) return;
-    busy = true;
-    if (playBtn) playBtn.disabled = true;
-    try {
-      progressLocked = true;
-      suppressPlaybackUI = true;
-      await needleToPlay();
-      suppressPlaybackUI = false;
-      progressLocked = false;
-      await safePlay({ muted: false });
-    } finally {
-      busy = false;
-      if (playBtn) playBtn.disabled = false;
-      updateButtons();
+
+    // V11: resume immediately.
+    // The needle animation should follow the audio, not block it.
+    progressLocked = false;
+    suppressPlaybackUI = false;
+
+    const started = await safePlay({ muted: false });
+    if (started) {
+      disc.classList.add("playing");
+      restartImageTimer();
+      needleToPlay(); // do not await; this removes the short delay before audio resumes
     }
+
+    updateButtons();
   }
 
-  async function pauseExistingTrack() {
+  function pauseExistingTrack() {
     if (busy) return;
-    busy = true;
-    if (playBtn) playBtn.disabled = true;
-    try {
-      audio.pause();
-      disc.classList.remove("playing");
-      stopImageTimer();
-      await needleToRest();
-    } finally {
-      busy = false;
-      if (playBtn) playBtn.disabled = false;
-      updateButtons();
-    }
+
+    // V11: pause immediately, then let the needle return without locking the player.
+    audio.pause();
+    disc.classList.remove("playing");
+    stopImageTimer();
+    needleToRest(); // do not await; tapping play can interrupt this and swing back in
+    updateButtons();
   }
 
   function togglePlayPause() {

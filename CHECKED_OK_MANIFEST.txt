@@ -1,4 +1,4 @@
-Anniversary Memory Player Basic v10 - CHANGED FILES ONLY
+Anniversary Memory Player Basic v11 - CHANGED FILES ONLY
 
 Included files:
 - index.html
@@ -11,9 +11,15 @@ Not included:
 - audio/
 - images/
 
-V10 fixes:
-- Removed/hid the play-pause button beside the progress bar.
-- Needle base uses a fixed pivot at the black rounded base.
-- Removed the lift transform because it made the base jump.
-- Audio does not start during the intro animation; progress stays at 0 until animation finishes.
-- cacheVersion updated to v10.
+V11 fixes:
+- Pause/resume no longer waits for the needle animation.
+- When paused, tapping play starts the audio immediately and the needle swings back in at the same time.
+- If the needle is still returning when you tap play, the return animation is interrupted and it swings back onto the record.
+- The play/pause button beside the progress bar is still removed.
+- cacheVersion updated to v11.
+
+V12 notes:
+- Added image transition lock so double-tapping too fast cannot make the cover fade jump.
+- Sleeve now stays visible parked on the left after the first opening animation.
+- Changing songs does not bring the sleeve back to the middle and does not hide it.
+- cacheVersion updated to v12.

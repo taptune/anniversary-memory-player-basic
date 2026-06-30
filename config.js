@@ -16,7 +16,7 @@
 */
 
 const PLAYER_CONFIG = {
-  cacheVersion: "v10", // Change to v10, v11, etc. after replacing files online.
+  cacheVersion: "v12", // Change to v13, v14, etc. after replacing files online.
 
   siteText: {
     browserTitle: "Anniversary Memory Player",
