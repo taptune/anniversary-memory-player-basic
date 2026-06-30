@@ -335,13 +335,23 @@ button{font:inherit;}
   height:100%;
   object-fit:contain;
   transform-origin:84% 17%;
-  /* OFF: points down and away from the record. */
-  transform:translate(42px,32px) rotate(-52deg);
-  transition:transform .58s cubic-bezier(.2,.85,.2,1);
+  --needle-x:58px;
+  --needle-y:54px;
+  --needle-rot:-62deg;
+  --needle-lift:0px;
+  /* OFF/resting position: lower and away from the record, like the red guide. */
+  transform:translate(var(--needle-x),calc(var(--needle-y) + var(--needle-lift))) rotate(var(--needle-rot));
+  transition:transform .52s cubic-bezier(.2,.85,.2,1);
+}
+.tonearm.lifted img{
+  /* Lifting illusion: the needle rises a little before it swings. */
+  --needle-lift:-16px;
 }
 .tonearm.on img{
-  /* PLAYING: needle drops onto the record. */
-  transform:translate(0,0) rotate(-15deg);
+  /* PLAYING position: the needle swings inward and lands on the record, like the green guide. */
+  --needle-x:-44px;
+  --needle-y:12px;
+  --needle-rot:-24deg;
 }
 
 .controls{width:100%;max-width:370px;margin:0 auto;}

@@ -1,35 +1,31 @@
-ANNIVERSARY MEMORY PLAYER BASIC v4
-Checked package: upload-ready GitHub root
+ANNIVERSARY MEMORY PLAYER BASIC - v5
 
-Main v4 changes:
-- Real split sleeve animation: sleeve-back + record/tape + sleeve-front.
-- On page open, the sleeve is closed in the center and the record/tape is inside.
-- On play, the sleeve moves left first.
-- After sleeve moves left, the record/tape pulls out to the center.
-- Audio becomes audible only after the pull-out animation.
-- Needle/tonearm OFF position points down and away from the record.
-- Needle/tonearm PLAYING position moves onto the record.
-- cacheVersion set to v4.
+Checked package notes:
+- ZIP structure is GitHub upload ready.
+- index.html is at repository root.
+- config.js cacheVersion is v5.
+- script.js syntax check passed.
+- config.js syntax check passed.
 
-Upload these to the GitHub repo root:
+V5 changes:
+1. Progress bar stays frozen at 0:00 during sleeve/tape/needle animation.
+2. Hidden muted iPhone/Safari unlock no longer shows moving progress.
+3. Audio resets to 0 and becomes audible only after the animation is finished.
+4. Needle now has a lift -> swing -> drop feeling.
+5. Needle rest/play positions tuned closer to the red/green guide.
+
+Expected GitHub root files:
 index.html
 style.css
 script.js
 config.js
-README_START_HERE.txt
-CHECKED_OK_MANIFEST.txt
 audio/
 images/
+README_START_HERE.txt
+CHECKED_OK_MANIFEST.txt
 
-Expected repo root after upload:
-/index.html
-/style.css
-/script.js
-/config.js
-/audio/song1.mp3
-/audio/song2.mp3
-/images/song1-image1.png
-/images/song1-image2.png
-/images/song2-image1.png
-/images/song2-image2.png
-/images/tonearm.png
+V6 notes:
+- Song change no longer closes the sleeve again.
+- After first start, sleeve stays parked and hidden.
+- Track changes use a lighter needle lift / re-cue motion.
+- cacheVersion updated to v6.
