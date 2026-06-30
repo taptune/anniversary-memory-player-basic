@@ -335,23 +335,23 @@ button{font:inherit;}
   height:100%;
   object-fit:contain;
   transform-origin:84% 17%;
-  --needle-x:58px;
-  --needle-y:54px;
-  --needle-rot:-62deg;
+  --needle-x:112px;
+  --needle-y:112px;
+  --needle-rot:-82deg;
   --needle-lift:0px;
-  /* OFF/resting position: lower and away from the record, like the red guide. */
+  /* V7 OFF/resting position: lower + away from the record, closer to your red guide. */
   transform:translate(var(--needle-x),calc(var(--needle-y) + var(--needle-lift))) rotate(var(--needle-rot));
-  transition:transform .52s cubic-bezier(.2,.85,.2,1);
+  transition:transform .62s cubic-bezier(.18,.85,.2,1);
 }
 .tonearm.lifted img{
-  /* Lifting illusion: the needle rises a little before it swings. */
-  --needle-lift:-16px;
+  /* Clear lifting illusion: needle rises first, then swings, then drops. */
+  --needle-lift:-28px;
 }
 .tonearm.on img{
-  /* PLAYING position: the needle swings inward and lands on the record, like the green guide. */
-  --needle-x:-44px;
-  --needle-y:12px;
-  --needle-rot:-24deg;
+  /* V7 PLAYING position: much farther inward so the needle sits on the record, closer to your green guide. */
+  --needle-x:-156px;
+  --needle-y:72px;
+  --needle-rot:-18deg;
 }
 
 .controls{width:100%;max-width:370px;margin:0 auto;}
@@ -386,7 +386,7 @@ audio{display:none;}
   .top-text{min-height:112px;}
   .artist{font-size:12px;letter-spacing:5px;}
   .song-title{min-height:70px;}
-  .tonearm{right:-58px;top:6px;transform:scale(.82);transform-origin:top right;}
+  .tonearm{right:-48px;top:6px;transform:scale(.82);transform-origin:top right;}
   .memory-buttons{gap:8px;}
   .main-btn{min-width:160px;padding:15px 18px;font-size:14px;}
   .small-btn{padding:12px 11px;}

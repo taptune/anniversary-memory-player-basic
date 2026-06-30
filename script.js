@@ -368,17 +368,15 @@
 
       audio.src = withVersion(track.audio);
       audio.load();
+      try { audio.currentTime = 0; } catch (error) {}
 
       // Freeze the visible progress during the intro / track-change animation.
       progressLocked = true;
       suppressPlaybackUI = true;
       setProgressAtStart();
 
-      // Safari/iPhone compatibility: attempt muted unlock immediately after tap.
-      // The visible UI remains frozen and the audio resets to 0 before unmuting.
-      let mutedPlayPromise = Promise.resolve(false);
-      if (shouldAutoplay) mutedPlayPromise = safePlay({ muted: true });
-
+      // v7: do NOT start audio, even muted, during the animation.
+      // This keeps the white progress bar frozen at 0:00 until the sleeve + needle motion is finished.
       if (useIntroAnimation) {
         await sleevePullOutAnimation();
         stageOpened = true;
@@ -392,9 +390,8 @@
       }
 
       if (shouldAutoplay) {
-        const startedMuted = await mutedPlayPromise;
         keepStageOpen();
-        await makeAudioAudibleAfterAnimation(startedMuted);
+        await makeAudioAudibleAfterAnimation(false);
       } else {
         suppressPlaybackUI = false;
         progressLocked = false;
@@ -415,7 +412,12 @@
     busy = true;
     playBtn.disabled = true;
     try {
+      progressLocked = true;
+      suppressPlaybackUI = true;
+      setProgressAtStart();
       await needleToPlay();
+      suppressPlaybackUI = false;
+      progressLocked = false;
       await safePlay({ muted: false });
     } finally {
       busy = false;

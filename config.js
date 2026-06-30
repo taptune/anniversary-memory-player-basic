@@ -17,7 +17,7 @@
 */
 
 const PLAYER_CONFIG = {
-  cacheVersion: "v6", // Change to v2, v3, etc. after replacing files online.
+  cacheVersion: "v7", // Change to v2, v3, etc. after replacing files online.
 
   artistName: "OUR MOMENTS",
   startTitle: "Our Anniversary",

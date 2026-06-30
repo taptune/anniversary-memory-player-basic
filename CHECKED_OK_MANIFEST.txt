@@ -1,31 +1,21 @@
-ANNIVERSARY MEMORY PLAYER BASIC - v5
+ANNIVERSARY MEMORY PLAYER BASIC V7 - CHANGED FILES ONLY
 
-Checked package notes:
-- ZIP structure is GitHub upload ready.
-- index.html is at repository root.
-- config.js cacheVersion is v5.
-- script.js syntax check passed.
-- config.js syntax check passed.
+This zip intentionally does NOT include audio/ or images/.
+Keep your existing GitHub audio/ and images/ folders.
 
-V5 changes:
-1. Progress bar stays frozen at 0:00 during sleeve/tape/needle animation.
-2. Hidden muted iPhone/Safari unlock no longer shows moving progress.
-3. Audio resets to 0 and becomes audible only after the animation is finished.
-4. Needle now has a lift -> swing -> drop feeling.
-5. Needle rest/play positions tuned closer to the red/green guide.
+Changed files included:
+- index.html
+- style.css
+- script.js
+- config.js
+- CHECKED_OK_MANIFEST.txt
 
-Expected GitHub root files:
-index.html
-style.css
-script.js
-config.js
-audio/
-images/
-README_START_HERE.txt
-CHECKED_OK_MANIFEST.txt
-
-V6 notes:
-- Song change no longer closes the sleeve again.
-- After first start, sleeve stays parked and hidden.
-- Track changes use a lighter needle lift / re-cue motion.
-- cacheVersion updated to v6.
+V7 fixes:
+- Audio no longer starts muted during animation.
+- White progress bar stays at 0:00 until all intro / song-change animation is done.
+- Needle positions are made much more obvious:
+  pause/rest = lower and farther out, closer to your red guide.
+  play = farther inward onto the record, closer to your green guide.
+- Needle lift motion is stronger and more visible.
+- Sleeve still only opens on first start; changing songs does not move sleeve back to center.
+- cacheVersion updated to v7.
