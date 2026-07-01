@@ -1,4 +1,4 @@
-Anniversary Memory Player Basic v11 - CHANGED FILES ONLY
+Anniversary Memory Player Basic v14 - CHANGED FILES ONLY
 
 Included files:
 - index.html
@@ -30,3 +30,20 @@ V13 notes:
 - First start still uses the sleeve pull-out animation.
 - Image spam lock from v12 is kept.
 - cacheVersion updated to v13.
+
+V14 notes:
+- Fixed the new tape entry animation.
+- During song change, the new tape now starts from the left sleeve position where the old tape disappeared.
+- It no longer enters from the top-right side.
+- cacheVersion updated to v14.
+
+V32 final notes:
+- Mobile first screen now fits without scrolling on common phone sizes.
+- Romantic warm background treatment added.
+- Opening animation adjusted so sleeve appears first, moves left, then tape pulls out.
+- Needle is hidden at the start and appears only after the sleeve moves left.
+- Tonearm is split into transparent base and arm images.
+- Start button uses a two-column layout: play icon on the left, text on two rows.
+- Top title is "Adam & Eve".
+- Sleeve text is "MEMORY OF" / "A&E".
+- cacheVersion updated to v32.

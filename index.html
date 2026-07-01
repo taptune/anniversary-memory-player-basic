@@ -5,16 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#050505" />
   <title>Anniversary Memory Player</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=32" />
 </head>
 <body>
   <div class="page-bg" id="pageBg"></div>
   <div class="grain"></div>
 
-  <main class="player-shell" aria-label="Anniversary memory music player" data-version="basic-v13">
+  <main class="player-shell" aria-label="Anniversary memory music player" data-version="basic-v32">
     <section class="top-text">
       <p class="artist" id="artistName">OUR MOMENTS</p>
-      <h1 class="song-title" id="songTitle">Our Anniversary</h1>
+      <h1 class="song-title" id="songTitle">Adam &amp; Eve</h1>
       <p class="song-note" id="songNote">SCAN • TAP • REMEMBER</p>
     </section>
 
@@ -36,13 +36,14 @@
       <div class="sleeve sleeve-front" id="sleeveFront" aria-hidden="true">
         <div class="sleeve-shine"></div>
         <div class="sleeve-label">
-          <span id="sleeveSmallText">MEMORY</span>
-          <strong id="sleeveBigText">LP</strong>
+          <span id="sleeveSmallText">MEMORY OF</span>
+          <strong id="sleeveBigText">A&amp;E</strong>
         </div>
       </div>
 
       <div class="tonearm" id="tonearm">
-        <img id="tonearmImg" src="images/tonearm.png" alt="" />
+        <img class="tonearm-piece tonearm-arm" id="tonearmImg" src="images/tonearm.png" alt="" />
+        <img class="tonearm-piece tonearm-base" id="tonearmBaseImg" src="images/tonearm.png" alt="" />
       </div>
     </section>
 
@@ -59,17 +60,23 @@
 
       <div class="memory-buttons">
         <button class="small-btn" id="prevBtn" type="button">PREV</button>
-        <button class="main-btn" id="mainBtn" type="button">▶ START MEMORY</button>
+        <button class="main-btn start-layout" id="mainBtn" type="button" aria-label="START OUR MEMORY">
+          <span class="main-btn-icon" aria-hidden="true">▶</span>
+          <span class="main-btn-copy">
+            <span>START OUR</span>
+            <span>MEMORY</span>
+          </span>
+        </button>
         <button class="small-btn" id="nextBtn" type="button">NEXT</button>
       </div>
     </section>
 
-    <p class="hint" id="hintText">Single Tap = Play/Pause  Double Tap = Image change</p>
+    <p class="hint" id="hintText">Tap: Play / Pause · Double tap: Change image</p>
 
     <audio id="audio" preload="metadata" playsinline></audio>
   </main>
 
-  <script src="config.js"></script>
-  <script src="script.js"></script>
+  <script src="config.js?v=32"></script>
+  <script src="script.js?v=32"></script>
 </body>
 </html>

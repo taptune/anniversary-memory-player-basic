@@ -16,28 +16,28 @@
 */
 
 const PLAYER_CONFIG = {
-  cacheVersion: "v13", // Change to v13, v14, etc. after replacing files online.
+  cacheVersion: "v32", // Change to v33, v34, etc. after replacing files online.
 
   siteText: {
     browserTitle: "Anniversary Memory Player",
 
     // Top words before any song starts
     artistName: "OUR MOMENTS",
-    startTitle: "Our Anniversary",
+    startTitle: "Adam & Eve",
     startNote: "SCAN • TAP • REMEMBER",
 
     // Button words
-    startButtonText: "▶ START MEMORY",
+    startButtonText: "START OUR MEMORY",
     nextMemoryButtonText: "NEXT MEMORY",
     prevButtonText: "PREV",
     nextButtonText: "NEXT",
 
     // Words printed on the sleeve
-    sleeveSmallText: "MEMORY",
-    sleeveBigText: "LP",
+    sleeveSmallText: "MEMORY OF",
+    sleeveBigText: "A&E",
 
     // Small words at the bottom
-    bottomHint: "Single Tap = Play/Pause  Double Tap = Image change",
+    bottomHint: "Tap: Play / Pause · Double tap: Change image",
 
     // Error / empty state words
     noTracksTitle: "Add songs in config.js",
@@ -55,6 +55,8 @@ const PLAYER_CONFIG = {
 
   defaultCover: "images/song1-image1.png",
   tonearmImage: "images/tonearm.png",
+  tonearmBaseImage: "images/tonearm-base.png",
+  tonearmArmImage: "images/tonearm-arm.png",
 
   tracks: [
     {

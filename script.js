@@ -16,6 +16,7 @@
   const coverFront = $("coverFront");
   const tonearm = $("tonearm");
   const tonearmImg = $("tonearmImg");
+  const tonearmBaseImg = $("tonearmBaseImg");
   const playBtn = $("playBtn");
   const prevBtn = $("prevBtn");
   const nextBtn = $("nextBtn");
@@ -98,29 +99,50 @@
     tonearm.classList.remove("on", "lifted");
   }
 
+  function hideNeedleForOpening() {
+    tonearm.classList.add("hidden-start");
+  }
+
+  function showNeedleForOpening() {
+    tonearm.classList.remove("hidden-start");
+  }
+
   async function needleToPlay() {
     const token = ++needleToken;
-    // V10: no translate / no jump. The fixed base stays in place; only rotation changes.
-    tonearm.classList.add("on");
-    await wait(620);
+    tonearm.classList.add("lifted");
+    await wait(140);
     if (token !== needleToken) return;
+
+    tonearm.classList.add("on");
+    await wait(520);
+    if (token !== needleToken) return;
+
     tonearm.classList.remove("lifted");
   }
 
   async function needleToRest() {
     const token = ++needleToken;
-    tonearm.classList.remove("on");
-    await wait(620);
+    tonearm.classList.add("lifted");
+    await wait(140);
     if (token !== needleToken) return;
+
+    tonearm.classList.remove("on");
+    await wait(520);
+    if (token !== needleToken) return;
+
     tonearm.classList.remove("lifted");
   }
 
   async function needleReCueOnRecord() {
     const token = ++needleToken;
-    // Keep the base fixed and avoid the jumping lift effect during song changes.
-    tonearm.classList.add("on");
-    await wait(260);
+    tonearm.classList.add("lifted");
+    await wait(120);
     if (token !== needleToken) return;
+
+    tonearm.classList.add("on");
+    await wait(280);
+    if (token !== needleToken) return;
+
     tonearm.classList.remove("lifted");
   }
 
@@ -132,6 +154,7 @@
     record.classList.remove("enter-side", "no-transition");
     record.classList.add("inside");
     needleInstantRest();
+    hideNeedleForOpening();
     stageOpened = false;
   }
 
@@ -143,6 +166,7 @@
     hideSleeves();
     setRecordLeft(false);
     record.classList.remove("inside", "enter-side", "no-transition");
+    showNeedleForOpening();
     stageOpened = true;
   }
 
@@ -269,8 +293,27 @@
 
   function updateButtons() {
     const started = currentTrackIndex >= 0;
-    mainBtn.textContent = started ? textFor("nextMemoryButtonText", "NEXT MEMORY") : textFor("startButtonText", "▶ START MEMORY");
+    renderMainButton(started);
     if (playBtn) playBtn.textContent = audio.paused || audio.muted || progressLocked ? "▶" : "Ⅱ";
+  }
+
+  function renderMainButton(started) {
+    if (started) {
+      mainBtn.classList.remove("start-layout");
+      mainBtn.textContent = textFor("nextMemoryButtonText", "NEXT MEMORY");
+      mainBtn.setAttribute("aria-label", textFor("nextMemoryButtonText", "Next memory"));
+      return;
+    }
+
+    mainBtn.classList.add("start-layout");
+    mainBtn.setAttribute("aria-label", textFor("startButtonText", "Start our memory"));
+    mainBtn.innerHTML = `
+      <span class="main-btn-icon" aria-hidden="true">▶</span>
+      <span class="main-btn-copy">
+        <span>START OUR</span>
+        <span>MEMORY</span>
+      </span>
+    `;
   }
 
   function makeShuffledOrder() {
@@ -314,18 +357,19 @@
   }
 
   async function sleevePullOutAnimation() {
-    // First start: sleeve starts closed in the middle. Then sleeve + tape go left,
-    // tape comes out to the center, and the sleeve disappears.
+    // First start: sleeve appears first, settles, then pulls the tape out.
     resetClosedSleeve();
-    await wait(200);
+    await wait(760);
 
     setSleevesLeft(true);
     setRecordLeft(true);
-    await wait(720);
+    await wait(860);
+    showNeedleForOpening();
+    await wait(260);
 
     record.classList.remove("inside");
     setRecordLeft(false);
-    await wait(820);
+    await wait(940);
 
     hideSleeves();
     stageOpened = true;
@@ -496,14 +540,17 @@
     artistName.textContent = textFor("artistName", "OUR MOMENTS");
     songTitle.textContent = textFor("startTitle", "Our Anniversary");
     songNote.textContent = textFor("startNote", "SCAN • TAP • REMEMBER");
-    mainBtn.textContent = textFor("startButtonText", "▶ START MEMORY");
+    renderMainButton(false);
     prevBtn.textContent = textFor("prevButtonText", "PREV");
     nextBtn.textContent = textFor("nextButtonText", "NEXT");
     hintText.textContent = textFor("bottomHint", "Single Tap = Play/Pause  Double Tap = Image change");
     if (sleeveSmallText) sleeveSmallText.textContent = textFor("sleeveSmallText", "MEMORY");
     if (sleeveBigText) sleeveBigText.textContent = textFor("sleeveBigText", "LP");
 
-    if (config.tonearmImage) tonearmImg.src = withVersion(config.tonearmImage);
+    tonearmImg.src = withVersion(config.tonearmArmImage || config.tonearmImage || "images/tonearm.png");
+    if (tonearmBaseImg) {
+      tonearmBaseImg.src = withVersion(config.tonearmBaseImage || config.tonearmImage || "images/tonearm.png");
+    }
     setCover(config.defaultCover || (tracks[0] && tracks[0].images && tracks[0].images[0]), false);
 
     // Initial screen: sleeve is closed; tape/record is inside; needle points down.
